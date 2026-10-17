@@ -12,7 +12,7 @@
 
 # Sistema Preditivo Multiagente para Eventos Cardíacos
 
-## Nome do grupo
+## Nome do grupo DRELL
 
 ## 👨‍🎓 Integrantes:
 - <a href="https://www.linkedin.com/in/richard-marques-26b3a14/">Richard</a>
