@@ -1,0 +1,16 @@
+# Ambiente e segredos
+.venv/
+.env
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Gerados em tempo de execução
+data/historico_atendimentos.db
+data/saidas/
+
+# macOS
+.DS_Store

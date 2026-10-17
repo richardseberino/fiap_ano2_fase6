@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Arquitetura do Sistema Preditivo Multiagente</title>
+<link rel="stylesheet" href="estilo.css">
+<style>
+svg text { font-family: "Helvetica Neue", Arial, sans-serif; }
+.diag { width: 100%; margin: 2px 0 6px; }
+</style>
+</head>
+<body>
+<h1>Arquitetura do Sistema Preditivo Multiagente para Eventos Cardíacos</h1>
+<p class="sub">FIAP · Graduação em IA · Fase 6 · Parte 2: OpenAI Agents SDK</p>
+
+<h2>1. Diagrama da arquitetura</h2>
+<svg class="diag" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Orquestrador no centro, com handoffs numerados para o Analista de Risco, o Especialista em Protocolos e o Planejador de Resposta">
+  <defs>
+    <marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="setaR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ed145b"/>
+    </marker>
+  </defs>
+
+  <!-- Entrada -->
+  <rect x="20" y="10" width="190" height="46" rx="6" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="115" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Novo paciente (JSON)</text>
+  <text x="115" y="46" text-anchor="middle" font-size="10" fill="#475569">10 variáveis clínicas simuladas</text>
+
+  <rect x="255" y="10" width="190" height="46" rx="6" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="350" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Validação Pydantic</text>
+  <text x="350" y="46" text-anchor="middle" font-size="10" fill="#475569">DadosPaciente: faixas e nomes</text>
+  <line x1="210" y1="33" x2="252" y2="33" stroke="#334155" stroke-width="1.5" marker-end="url(#seta)"/>
+
+  <rect x="490" y="10" width="190" height="46" rx="6" fill="#fff7ed" stroke="#f59e0b"/>
+  <text x="585" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Guardrail de entrada</text>
+  <text x="585" y="46" text-anchor="middle" font-size="10" fill="#475569">bloqueia prescrição e doses</text>
+
+  <line x1="350" y1="56" x2="350" y2="103" stroke="#334155" stroke-width="1.5" marker-end="url(#seta)"/>
+  <line x1="585" y1="56" x2="585" y2="80" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="585" y1="80" x2="440" y2="118" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#seta)"/>
+
+  <!-- Orquestrador -->
+  <rect x="250" y="106" width="200" height="66" rx="8" fill="#ed145b"/>
+  <text x="350" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Agente Orquestrador</text>
+  <text x="350" y="147" text-anchor="middle" font-size="10" fill="#fff">tool: consultar_estado_atendimento</text>
+  <text x="350" y="162" text-anchor="middle" font-size="10" fill="#fff">decide o próximo handoff pela etapa</text>
+
+  <!-- Especialistas -->
+  <rect x="20" y="250" width="200" height="62" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="120" y="273" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Agente Analista de Risco</text>
+  <text x="120" y="290" text-anchor="middle" font-size="10" fill="#334155">tool: prever_risco_cardiaco</text>
+  <text x="120" y="304" text-anchor="middle" font-size="10" fill="#334155">probabilidade e classificação</text>
+
+  <rect x="250" y="250" width="200" height="62" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="350" y="273" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Agente Especialista</text>
+  <text x="350" y="287" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">em Protocolos</text>
+  <text x="350" y="304" text-anchor="middle" font-size="10" fill="#334155">tool: consultar_protocolos</text>
+
+  <rect x="480" y="250" width="200" height="62" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="580" y="273" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Agente Planejador</text>
+  <text x="580" y="287" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">de Resposta</text>
+  <text x="580" y="304" text-anchor="middle" font-size="10" fill="#334155">tool: planejar_resposta_operacional</text>
+
+  <!-- Handoffs de ida -->
+  <path d="M270,172 L135,247" fill="none" stroke="#ed145b" stroke-width="1.8" marker-end="url(#setaR)"/>
+  <text x="172" y="240" font-size="10.5" font-weight="700" fill="#ed145b">① handoff</text>
+  <path d="M340,172 L340,247" fill="none" stroke="#ed145b" stroke-width="1.8" marker-end="url(#setaR)"/>
+  <text x="333" y="215" text-anchor="end" font-size="10.5" font-weight="700" fill="#ed145b">② handoff</text>
+  <path d="M430,172 L565,247" fill="none" stroke="#ed145b" stroke-width="1.8" marker-end="url(#setaR)"/>
+  <text x="505" y="203" font-size="10.5" font-weight="700" fill="#ed145b">③ handoff</text>
+
+  <!-- Retornos -->
+  <path d="M100,250 C 90,190 180,150 247,140" fill="none" stroke="#64748b" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#seta)"/>
+  <text x="40" y="190" font-size="9.5" fill="#64748b">retorno</text>
+  <path d="M362,250 L362,175" fill="none" stroke="#64748b" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#seta)"/>
+  <text x="368" y="230" font-size="9.5" fill="#64748b">retorno</text>
+
+  <!-- Recursos -->
+  <rect x="20" y="340" width="200" height="44" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="120" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Modelo Random Forest</text>
+  <text x="120" y="374" text-anchor="middle" font-size="10" fill="#334155">modelo_pico_risco.joblib</text>
+  <line x1="120" y1="312" x2="120" y2="337" stroke="#334155" stroke-width="1.5" marker-end="url(#seta)"/>
+
+  <rect x="250" y="340" width="200" height="44" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="350" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Base de protocolos</text>
+  <text x="350" y="374" text-anchor="middle" font-size="10" fill="#334155">10 regras com prioridade e ação</text>
+  <line x1="350" y1="312" x2="350" y2="337" stroke="#334155" stroke-width="1.5" marker-end="url(#seta)"/>
+
+  <rect x="480" y="340" width="200" height="44" rx="6" fill="#fff7ed" stroke="#f59e0b"/>
+  <text x="580" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Guardrail de saída</text>
+  <text x="580" y="374" text-anchor="middle" font-size="10" fill="#334155">confere a saída com o contexto</text>
+  <line x1="580" y1="312" x2="580" y2="337" stroke="#334155" stroke-width="1.5" marker-end="url(#seta)"/>
+
+  <!-- Contexto compartilhado -->
+  <rect x="20" y="410" width="430" height="70" rx="8" fill="#f1f5f9" stroke="#475569" stroke-dasharray="6 3"/>
+  <text x="235" y="432" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Contexto compartilhado (ContextoAtendimento)</text>
+  <text x="235" y="450" text-anchor="middle" font-size="10" fill="#334155">paciente · risco · protocolos · plano · trilha de eventos</text>
+  <text x="235" y="466" text-anchor="middle" font-size="10" fill="#334155">lido e escrito pelas tools, guardrails e handoffs de todos os agentes</text>
+
+  <rect x="480" y="410" width="200" height="70" rx="8" fill="#ed145b" fill-opacity="0.08" stroke="#ed145b"/>
+  <text x="580" y="432" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">RecomendacaoFinal</text>
+  <text x="580" y="450" text-anchor="middle" font-size="10" fill="#334155">probabilidade · classificação</text>
+  <text x="580" y="466" text-anchor="middle" font-size="10" fill="#334155">protocolos · ações · justificativa</text>
+  <line x1="580" y1="384" x2="580" y2="407" stroke="#334155" stroke-width="1.5" marker-end="url(#seta)"/>
+</svg>
+<p class="nota">Setas sólidas em rosa: handoffs do Orquestrador, na ordem ①, ② e ③. Setas tracejadas: o Analista e o
+Especialista devolvem o controle ao Orquestrador. O histórico de mensagens de cada atendimento fica em uma
+<code>SQLiteSession</code>, o que permite perguntas de acompanhamento depois da recomendação.</p>
+
+<h2>2. Papel de cada agente</h2>
+<table>
+<tr><th style="width:22%">Agente</th><th style="width:26%">Tools e recursos</th><th>Responsabilidade</th></tr>
+<tr><td><b>Orquestrador</b></td><td><code>consultar_estado_atendimento</code>, guardrail de entrada, 3 handoffs</td>
+<td>Ponto de entrada. A cada turno consulta a etapa atual no contexto e transfere para o especialista certo.
+Depois da recomendação, responde perguntas de acompanhamento usando o histórico da sessão. Nunca calcula risco
+nem escolhe protocolos.</td></tr>
+<tr><td><b>Analista de Risco</b></td><td><code>prever_risco_cardiaco</code> e o modelo Random Forest</td>
+<td>Chama o modelo de ML treinado na Parte 1, grava no contexto a probabilidade, a classificação (BAIXO, MODERADO
+ou ALTO) e os fatores de risco, e devolve o controle ao Orquestrador.</td></tr>
+<tr><td><b>Especialista em Protocolos</b></td><td><code>consultar_protocolos</code> e a base de protocolos</td>
+<td>Cruza os dados do paciente e o risco previsto com as 10 regras da base. Grava os protocolos acionados, por
+prioridade, e os parâmetros em zona de atenção, que estão perto do limite sem acioná-lo.</td></tr>
+<tr><td><b>Planejador de Resposta</b></td><td><code>planejar_resposta_operacional</code>, <code>output_type</code> e guardrail de saída</td>
+<td>Converte cada protocolo em ação operacional com responsável e prazo. Produz a <code>RecomendacaoFinal</code>
+estruturada, com justificativa em linguagem natural, e encerra o fluxo.</td></tr>
+</table>
+
+<h2>3. Uso de handoffs, tools, histórico e validação</h2>
+<ul>
+<li><b>Handoffs.</b> A topologia é <i>hub-and-spoke</i>. Cada handoff do Orquestrador usa <code>is_enabled</code> e só
+fica disponível na etapa certa: análise de risco, depois protocolos, depois plano. Assim, o LLM não consegue pular
+etapas nem repetir a predição. Cada handoff tem um <code>on_handoff</code> que registra a transferência na trilha.</li>
+<li><b>Tools.</b> As quatro tools são <code>@function_tool</code> que leem os dados do paciente do contexto compartilhado
+(<code>RunContextWrapper</code>). O LLM decide <i>quando</i> chamar cada tool, mas não digita valores clínicos. Isso
+elimina erros de transcrição e garante que o resultado da predição seja o mesmo para todos os agentes.</li>
+<li><b>Histórico de mensagens.</b> Cada atendimento usa uma <code>SQLiteSession</code> gravada em
+<code>data/historico_atendimentos.db</code>. No modo <code>--interativo</code>, perguntas como "por que o risco ficou alto?"
+são respondidas pelo Orquestrador com base nesse histórico.</li>
+<li><b>Validação de saída.</b> A validação acontece em três camadas. A primeira é o Pydantic na entrada. A segunda é o
+<code>output_type=RecomendacaoFinal</code>, que obriga o LLM a responder em JSON com esse esquema. A terceira é o
+guardrail de saída, que compara probabilidade, classificação, protocolos e ações com o contexto. Se houver
+divergência, o tripwire dispara e o sistema usa a recomendação montada direto do contexto validado.</li>
+<li><b>Resiliência.</b> Se algum agente responder em texto em vez de transferir, o sistema retoma o fluxo pelo
+Orquestrador, que consulta a etapa atual e continua de onde parou, com até 2 retomadas.</li>
+</ul>
+
+<h2 class="quebra">4. Exemplo de entrada e saída</h2>
+<p><b>Entrada:</b> o paciente do enunciado, arquivo <code>data/pacientes/novo_caso_enunciado.json</code>. A chave
+<code>"disponibilidade recursos"</code>, com espaço, é normalizada pela validação.</p>
+<pre>{"idade_media": 62, "carga_sistema": 92, "tempo_espera": 75, "fc_media": 118, "spo2_media": 89,
+ "pa_sistolica": 100, "temperatura": 37.5, "densidade_eventos": 7, "eventos_24h": 5,
+ "disponibilidade recursos": 25}</pre>
+<p><b>Trilha de execução</b> impressa pelos hooks do Runner:</p>
+<pre>[agente]  Agente Orquestrador assumiu o atendimento
+[tool]    Agente Orquestrador chamou consultar_estado_atendimento
+[handoff] Agente Orquestrador → Agente Analista de Risco
+[tool]    Agente Analista de Risco chamou prever_risco_cardiaco
+[handoff] Agente Analista de Risco → Agente Orquestrador
+[tool]    Agente Orquestrador chamou consultar_estado_atendimento
+[handoff] Agente Orquestrador → Agente Especialista em Protocolos
+[tool]    Agente Especialista em Protocolos chamou consultar_protocolos
+[handoff] Agente Especialista em Protocolos → Agente Orquestrador
+[tool]    Agente Orquestrador chamou consultar_estado_atendimento
+[handoff] Agente Orquestrador → Agente Planejador de Resposta
+[tool]    Agente Planejador de Resposta chamou planejar_resposta_operacional
+Guardrail de saída: aprovado</pre>
+<p><b>Saída final</b> do Agente Planejador de Resposta:</p>
+<pre>RISCO PREVISTO: 0.99
+CLASSIFICAÇÃO DE RISCO: ALTO
+
+FATORES DE RISCO IDENTIFICADOS:
+- Carga do sistema acima de 80% (valor: 92)
+- Tempo de espera acima de 60 min (valor: 75)
+- SpO2 abaixo de 92% (valor: 89)
+- Frequência cardíaca acima de 110 bpm (valor: 118)
+- Mais de 4 eventos nas últimas 24 h (valor: 5)
+- Disponibilidade de recursos abaixo de 40% (valor: 25)
+
+PROTOCOLOS SUGERIDOS:
+- Se risco sistêmico alto → ativar estado de emergência
+- Se carga do sistema > 85% → abrir unidades temporárias
+- Se disponibilidade_recursos < 30% → redistribuir insumos
+- Se densidade_eventos > 6 → ativar plano de contingência
+
+AÇÕES OPERACIONAIS:
+[P2] Declarar estado de emergência e comunicar a direção clínica   (Direção clínica, até 30 min)
+[P3] Abrir leitos e unidades temporárias para absorver a demanda   (Gestão de leitos, até 2 h)
+[P3] Redistribuir insumos e equipamentos entre as unidades         (Farmácia e logística, até 1 h)
+[P3] Ativar o plano de contingência e reforçar escalas             (Coordenação de plantão, até 1 h)
+
+PARÂMETROS EM ZONA DE ATENÇÃO:
+- spo2_media = 89% (limite < 88%, protocolo P01 ainda não acionado)
+- fc_media = 118 bpm (limite > 120 bpm, protocolo P03 ainda não acionado)
+- eventos_24h = 5 eventos (limite > 5 eventos, protocolo P04 ainda não acionado)
+- tempo_espera = 75 min (limite > 90 min, protocolo P06 ainda não acionado)
+- temperatura = 37.5 °C (limite > 38 °C, protocolo P07 ainda não acionado)
+- pa_sistolica = 100 mmHg (limite < 90 mmHg, protocolo P09 ainda não acionado)</pre>
+<p>A saída também traz uma justificativa em linguagem natural, redigida pelo LLM, e o aviso de que se trata de apoio
+à decisão com dados simulados. O texto da justificativa varia entre execuções. Os números, protocolos e ações não
+variam, porque vêm do contexto e são conferidos pelo guardrail de saída.</p>
+<p><b>Diferença em relação ao exemplo do enunciado.</b> O enunciado lista o protocolo de SpO2, mas o paciente tem
+SpO2 de 89%, acima do limite de 88%. O sistema aplica as regras à risca e mostra a SpO2 como parâmetro em zona de
+atenção. Pelo mesmo critério, o sistema acrescenta o plano de contingência, pois a densidade de eventos é 7, acima
+de 6, e o estado de emergência, pois o risco previsto é ALTO.</p>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{
+  "algoritmo_escolhido": "Random Forest",
+  "registros": 5000,
+  "proporcao_pico_risco": 0.2658,
+  "tamanho_treino": 4000,
+  "tamanho_teste": 1000,
+  "comparacao_modelos": {
+    "Regressão Logística": {
+      "f1_cv_media": 0.6427,
+      "f1_cv_desvio": 0.0313,
+      "acuracia": 0.816,
+      "precisao": 0.6934,
+      "recall": 0.5526,
+      "f1": 0.6151,
+      "roc_auc": 0.8715,
+      "matriz_confusao": {
+        "VN": 669,
+        "FP": 65,
+        "FN": 119,
+        "VP": 147
+      }
+    },
+    "Árvore de Decisão": {
+      "f1_cv_media": 0.993,
+      "f1_cv_desvio": 0.0033,
+      "acuracia": 0.997,
+      "precisao": 0.9962,
+      "recall": 0.9925,
+      "f1": 0.9944,
+      "roc_auc": 0.9956,
+      "matriz_confusao": {
+        "VN": 733,
+        "FP": 1,
+        "FN": 2,
+        "VP": 264
+      }
+    },
+    "Random Forest": {
+      "f1_cv_media": 0.9953,
+      "f1_cv_desvio": 0.0021,
+      "acuracia": 0.999,
+      "precisao": 1.0,
+      "recall": 0.9962,
+      "f1": 0.9981,
+      "roc_auc": 1.0,
+      "matriz_confusao": {
+        "VN": 734,
+        "FP": 0,
+        "FN": 1,
+        "VP": 265
+      }
+    }
+  },
+  "metricas_teste": {
+    "acuracia": 0.999,
+    "precisao": 1.0,
+    "recall": 0.9962,
+    "f1": 0.9981,
+    "roc_auc": 1.0,
+    "matriz_confusao": {
+      "VN": 734,
+      "FP": 0,
+      "FN": 1,
+      "VP": 265
+    }
+  },
+  "importancia_variaveis": {
+    "carga_sistema": 0.2287,
+    "disponibilidade_recursos": 0.2272,
+    "tempo_espera": 0.2043,
+    "spo2_media": 0.1654,
+    "fc_media": 0.0695,
+    "eventos_24h": 0.0635,
+    "idade_media": 0.0132,
+    "temperatura": 0.0118,
+    "pa_sistolica": 0.0114,
+    "densidade_eventos": 0.0051
+  },
+  "versao_sklearn": "1.9.1"
+}

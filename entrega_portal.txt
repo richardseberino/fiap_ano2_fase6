@@ -1,0 +1,10 @@
+FIAP - Graduação em Inteligência Artificial - Fase 6
+Sistema Preditivo Multiagente para Eventos Cardíacos
+
+Grupo: [NOME DO GRUPO]
+
+Repositório GitHub (privado, compartilhado com fiap-tutoria):
+https://github.com/[USUARIO]/[REPOSITORIO]
+
+Vídeo demonstrativo (YouTube, não listado):
+https://youtu.be/[ID-DO-VIDEO]

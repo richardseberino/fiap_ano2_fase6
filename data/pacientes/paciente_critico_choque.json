@@ -1,0 +1,13 @@
+{
+  "paciente_id": "PAC-004-critico",
+  "idade_media": 78,
+  "carga_sistema": 95,
+  "tempo_espera": 110,
+  "fc_media": 132,
+  "spo2_media": 85,
+  "pa_sistolica": 84,
+  "temperatura": 38.9,
+  "densidade_eventos": 8,
+  "eventos_24h": 7,
+  "disponibilidade_recursos": 22
+}

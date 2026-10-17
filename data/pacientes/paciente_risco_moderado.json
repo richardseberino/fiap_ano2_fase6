@@ -1,0 +1,13 @@
+{
+  "paciente_id": "PAC-002-moderado",
+  "idade_media": 70,
+  "carga_sistema": 88,
+  "tempo_espera": 60,
+  "fc_media": 82,
+  "spo2_media": 97,
+  "pa_sistolica": 122,
+  "temperatura": 38.4,
+  "densidade_eventos": 2,
+  "eventos_24h": 1,
+  "disponibilidade_recursos": 75
+}

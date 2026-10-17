@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório Técnico: Modelo Preditivo de Pico de Risco Cardíaco</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<h1>Relatório Técnico: Modelo Preditivo de Pico de Risco Cardíaco</h1>
+<p class="sub">FIAP · Graduação em IA · Fase 6 · Sistema Preditivo Multiagente para Eventos Cardíacos</p>
+
+<h2>1. Dados e preparação</h2>
+<p>Usamos a base sintética do enunciado, gerada com semente 42: 5.000 registros, 10 variáveis numéricas e
+o alvo binário <code>pico_risco</code>. O alvo vale 1 quando pelo menos dois de seis critérios estão presentes:
+carga &gt; 80%, espera &gt; 60 min, SpO2 &lt; 92%, FC &gt; 110 bpm, eventos 24 h &gt; 4 e recursos &lt; 40%.
+A base não tem valores ausentes e é desbalanceada, com 26,6% de picos. Por isso, a separação treino/teste
+(80/20) foi <b>estratificada</b>, o que manteve 26,6% de picos nos dois conjuntos. Não foi necessário
+padronizar as variáveis para modelos baseados em árvores. Para a Regressão Logística usamos
+<code>StandardScaler</code> dentro de um <code>Pipeline</code>, ajustado só no treino, para evitar vazamento de dados.</p>
+
+<h2>2. Justificativa do algoritmo</h2>
+<p>Comparamos três classificadores supervisionados com validação cruzada estratificada de 5 folds no treino.
+Em seguida, avaliamos cada um no conjunto de teste, que não foi usado em nenhuma decisão anterior.</p>
+<table>
+<tr><th>Modelo</th><th>F1 (CV, média ± dp)</th><th>Acurácia</th><th>Precisão</th><th>Recall</th><th>F1</th><th>ROC AUC</th></tr>
+<tr><td>Regressão Logística</td><td class="n">0,643 ± 0,031</td><td class="n">0,816</td><td class="n">0,693</td><td class="n">0,553</td><td class="n">0,615</td><td class="n">0,872</td></tr>
+<tr><td>Árvore de Decisão (prof. 6)</td><td class="n">0,993 ± 0,003</td><td class="n">0,997</td><td class="n">0,996</td><td class="n">0,992</td><td class="n">0,994</td><td class="n">0,996</td></tr>
+<tr class="destaque"><td>Random Forest (300 árvores)</td><td class="n">0,995 ± 0,002</td><td class="n">0,999</td><td class="n">1,000</td><td class="n">0,996</td><td class="n">0,998</td><td class="n">1,000</td></tr>
+</table>
+<p>Escolhemos o <b>Random Forest</b> por três motivos. Primeiro, o alvo é construído com <b>limites por variável</b> e
+uma contagem de critérios. Esse padrão é exatamente o que uma árvore aprende com seus cortes, enquanto a fronteira
+"2 de 6 critérios" não é linear, o que explica o F1 de apenas 0,64 da Regressão Logística. Segundo, o ensemble de
+árvores tem variância menor que uma árvore isolada, o que se vê no menor desvio entre os folds. Terceiro, ele produz
+<b>probabilidades</b> via <code>predict_proba</code>, que o sistema multiagente usa para classificar o risco em
+BAIXO (&lt; 0,30), MODERADO (0,30 a 0,69) e ALTO (≥ 0,70).</p>
+
+<h2>3. Interpretação das métricas</h2>
+<ul>
+<li><b>Acurácia de 99,9%</b>: o modelo errou 1 de 1.000 casos de teste. Como a base é desbalanceada, essa métrica
+sozinha não basta, pois um modelo que dissesse sempre "sem pico" já teria 73,4% de acurácia.</li>
+<li><b>Recall de 99,6%</b> na classe de pico é a métrica mais importante neste domínio, porque mede quantos
+picos reais foram detectados. Deixar de sinalizar um pico custa mais que um alarme falso.</li>
+<li><b>Precisão de 100%</b>: todo alerta emitido no teste correspondia a um pico real, sem alarmes falsos.</li>
+<li><b>ROC AUC de 1,00</b>: as probabilidades ordenam perfeitamente os casos, o que valida o uso de faixas de probabilidade.</li>
+</ul>
+
+<h2>4. Análise da matriz de confusão</h2>
+<div class="lado">
+<img src="../img/matriz_confusao.png" alt="Matriz de confusão do Random Forest no conjunto de teste">
+<div>
+<p>No conjunto de teste, com 1.000 casos:</p>
+<ul>
+<li><b>734 verdadeiros negativos</b>: casos sem pico corretamente descartados.</li>
+<li><b>265 verdadeiros positivos</b>: picos corretamente detectados.</li>
+<li><b>0 falsos positivos</b>: nenhum alarme desnecessário.</li>
+<li><b>1 falso negativo</b>: um único pico não detectado. É um caso de fronteira: carga de 90,8% e tempo de
+espera de 60,009 min, apenas 0,009 min acima do limite de 60. O modelo deu probabilidade de 0,45. Com o limiar
+padrão de 0,5 ele vira falso negativo, mas o sistema multiagente o classifica como risco <b>MODERADO</b>, e não
+BAIXO, o que ainda gera alerta.</li>
+</ul>
+<p>A importância das variáveis confirma que o modelo aprendeu a estrutura certa. Carga, recursos, espera e SpO2
+somam 83% da importância. FC e eventos 24 h vêm em seguida, porque seus limites são raros na base. Idade, PA,
+temperatura e densidade de eventos não fazem parte da regra e ficam com importância próxima de zero.</p>
+</div>
+</div>
+
+<h2>5. Limitações</h2>
+<ul>
+<li><b>Desempenho otimista.</b> O alvo é uma função determinística e sem ruído das próprias entradas. O modelo
+essencialmente redescobre a regra de geração. Em dados reais, com erro de medição e fatores não observados, as
+métricas seriam bem menores.</li>
+<li><b>Variáveis sem relação clínica.</b> A temperatura simulada tem média de 24 °C, valor que parece ambiental e não
+corporal. Idade e PA não influenciam o alvo, embora sejam fatores de risco cardíaco conhecidos.</li>
+<li><b>Mistura de níveis.</b> As variáveis misturam dados do paciente, como FC e SpO2, com dados do sistema, como carga
+e recursos. Isso dificulta interpretar o resultado como risco individual.</li>
+<li><b>Sensibilidade aos limites.</b> Pequenas variações perto dos cortes mudam a previsão de forma brusca. No paciente de exemplo
+de risco moderado, um tempo de espera de 60 min gera probabilidade de 0,40, enquanto 61 min gera 0,95.</li>
+<li><b>Sem calibração nem validação externa.</b> As probabilidades não foram calibradas e o modelo não foi testado
+em outra população.</li>
+</ul>
+
+<h2>6. Melhorias propostas</h2>
+<ul>
+<li>Treinar com dados reais ou com uma base sintética que inclua ruído e rótulos clínicos, e repetir a validação.</li>
+<li>Calibrar as probabilidades com <code>CalibratedClassifierCV</code> e escolher o limiar de decisão pela curva
+precisão-recall, priorizando o recall.</li>
+<li>Ajustar hiperparâmetros com <code>GridSearchCV</code> e explicar previsões individuais com SHAP.</li>
+<li>Separar variáveis do paciente e do sistema em modelos distintos ou em agentes distintos.</li>
+<li>Monitorar desvio de dados (<i>data drift</i>) em produção e retreinar periodicamente.</li>
+</ul>
+</body>
+</html>

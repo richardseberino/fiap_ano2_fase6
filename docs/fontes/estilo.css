@@ -1,0 +1,20 @@
+@page { size: A4; margin: 14mm 15mm 14mm 15mm; }
+* { box-sizing: border-box; }
+body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 9.6pt; line-height: 1.38; color: #1f2937; margin: 0; }
+h1 { font-size: 15pt; margin: 0 0 2px; color: #0f172a; }
+.sub { color: #475569; font-size: 9pt; margin: 0 0 8px; border-bottom: 2px solid #ed145b; padding-bottom: 6px; }
+h2 { font-size: 11pt; color: #ed145b; margin: 10px 0 4px; }
+p { margin: 0 0 6px; text-align: justify; }
+ul { margin: 0 0 6px; padding-left: 16px; }
+li { margin-bottom: 2px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 8px; font-size: 8.8pt; }
+th, td { border: 1px solid #cbd5e1; padding: 3px 6px; text-align: left; vertical-align: top; }
+th { background: #f1f5f9; }
+td.n { text-align: right; font-variant-numeric: tabular-nums; }
+tr.destaque td { background: #fdf2f8; font-weight: 600; }
+.lado { display: flex; gap: 12px; align-items: flex-start; }
+.lado img { width: 46%; border: 1px solid #e2e8f0; }
+code, pre { font-family: Menlo, Consolas, monospace; font-size: 8.2pt; }
+pre { background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 8px; margin: 4px 0 8px; white-space: pre-wrap; line-height: 1.3; }
+.quebra { break-before: page; }
+.nota { font-size: 8.4pt; color: #475569; }

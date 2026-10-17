@@ -1,0 +1,15 @@
+# Parte 1: modelo preditivo
+numpy>=2.0
+pandas>=2.2
+scikit-learn==1.9.1   # mesma versão usada para salvar o modelo .joblib
+matplotlib>=3.8
+seaborn>=0.13
+joblib>=1.4
+
+# Parte 2: sistema multiagente
+openai-agents==0.23.1
+pydantic>=2.7
+python-dotenv>=1.0
+
+# Testes
+pytest>=8.0

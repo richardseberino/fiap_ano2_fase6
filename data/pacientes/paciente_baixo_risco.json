@@ -1,0 +1,13 @@
+{
+  "paciente_id": "PAC-003-baixo",
+  "idade_media": 48,
+  "carga_sistema": 65,
+  "tempo_espera": 30,
+  "fc_media": 82,
+  "spo2_media": 97,
+  "pa_sistolica": 122,
+  "temperatura": 36.6,
+  "densidade_eventos": 2,
+  "eventos_24h": 1,
+  "disponibilidade_recursos": 75
+}
