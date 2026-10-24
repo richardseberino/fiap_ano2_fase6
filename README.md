@@ -194,7 +194,7 @@ PARÂMETROS EM ZONA DE ATENÇÃO:
 
 ## 📎 Links e Observações
 
-- **Vídeo demonstrativo:** https://youtu.be/COLE-AQUI-O-LINK
+- **Vídeo demonstrativo:** https://youtu.be/1GLxRKDapgg
 - **Relatório técnico:** [docs/relatorio_tecnico.pdf](docs/relatorio_tecnico.pdf)
 - **Arquitetura multiagente:** [docs/arquitetura_multiagente.pdf](docs/arquitetura_multiagente.pdf)
 
